@@ -114,3 +114,15 @@
   (is (= [0xde 0xad] (w/hex->ints "0xdead")))
   (is (= "dead" (w/ints->hex [0xde 0xad])))
   (is (= [] (w/hex->ints "0x"))))
+
+(deftest argument-types-splits-a-signature
+  ;; A tuple argument contains its own commas, so this cannot be `split`.
+  (is (= [] (abi/argument-types "getChallengeFinality()")))
+  (is (= ["uint256"] (abi/argument-types "dataSetLive(uint256)")))
+  (is (= ["uint256" "address" "(bytes)[]" "bytes"]
+         (abi/argument-types "addPieces(uint256,address,(bytes)[],bytes)")))
+  (is (= ["uint256" "(bytes32,bytes32[])[]"]
+         (abi/argument-types "provePossession(uint256,(bytes32,bytes32[])[])")))
+  (testing "and the result is what encode takes"
+    (is (= "0x0000000000000000000000000000000000000000000000000000000000000001"
+           (abi/encode-hex (abi/argument-types "dataSetLive(uint256)") [1])))))

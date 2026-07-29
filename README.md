@@ -85,7 +85,7 @@ viem does not accept the `(a,b)` shorthand. That is deliberate: if the two
 spellings disagree about what `(uint256,bytes)` means, the test fails — which
 it would not if one were derived from the other.
 
-Both runtimes run the whole suite. **125 assertions, green on both.**
+Both runtimes run the whole suite. **130 assertions, green on both.**
 
 ```sh
 clojure -M:test        # JVM

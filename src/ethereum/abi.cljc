@@ -197,6 +197,18 @@
   [types values]
   (encode-block (mapv parse-type types) values))
 
+(defn argument-types
+  "The argument types of a canonical signature: `\"addPieces(uint256,address,(bytes)[],bytes)\"`
+  → `[\"uint256\" \"address\" \"(bytes)[]\" \"bytes\"]`.
+
+  Here rather than in each caller because a caller that keeps the signature
+  and the type vector as two separate literals has two things to keep in
+  step, and the ABI gives no sign when they drift."
+  [signature]
+  (let [open (str/index-of signature "(")
+        inner (subs signature (inc open) (dec (count signature)))]
+    (if (str/blank? inner) [] (mapv str/trim (split-top-level inner)))))
+
 (defn encode-hex [types values]
   (str "0x" (w/ints->hex (encode types values))))
 
