@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  jvm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: latest
+      - run: clojure -M:lint
+      - run: clojure -M:test
+
+  cljs:
+    # Not redundant with the JVM job: a uint256 goes through `BigInt` here and
+    # `BigInteger` there, and every JavaScript bitwise operator truncates to 32
+    # bits. viem's bytes come out the same on both or the word layer is wrong
+    # on one of them.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: latest
+      - run: npm install -g nbb
+      - run: nbb --classpath "$(clojure -A:cljs -Spath)" scripts/verify-cljs.cljs
+
+  vectors:
+    # The vector table is viem's output, not this library's. Regenerate and
+    # fail if it has drifted — either because a case was edited by hand, or
+    # because viem changed its mind about an encoding.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install -g nbb
+      - run: npm ci
+      - name: Regenerate and compare
+        run: |
+          set -euo pipefail
+          VIEM_VERSION=$(node -e "process.stdout.write(require('viem/package.json').version)") \
+            nbb testdata/gen_vectors.cljs > /tmp/vectors.cljc
+          diff -u test/ethereum/vectors.cljc /tmp/vectors.cljc

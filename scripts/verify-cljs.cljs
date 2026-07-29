@@ -1,0 +1,22 @@
+#!/usr/bin/env nbb
+;; Run the suite on the ClojureScript side.
+;;
+;; Not a formality: a `uint256` is four times wider than the JVM's widest
+;; primitive and five times wider than what a JavaScript `Number` represents
+;; exactly, so every word on this path goes through `BigInt` where the other
+;; goes through `BigInteger`. viem's bytes are the same on both or the word
+;; layer is wrong on one.
+;;
+;;   nbb --classpath "$(clojure -A:cljs -Spath)" scripts/verify-cljs.cljs
+(ns verify-cljs
+  (:require [clojure.test :as t]
+            [ethereum.abi-test]))
+
+(defmethod t/report [:cljs.test/default :end-run-tests] [m]
+  (println)
+  (if (t/successful? m)
+    (println "all checks passed on the ClojureScript path")
+    (do (println "FAILED on the ClojureScript path")
+        (js/process.exit 1))))
+
+(t/run-tests 'ethereum.abi-test)

@@ -1,0 +1,13 @@
+{
+  "name": "org-ethereum-abi",
+  "private": true,
+  "description": "Portable .cljc Ethereum ABI argument codec — static, dynamic, arrays, tuples",
+  "scripts": {
+    "test:cljs": "nbb --classpath \"$(clojure -A:cljs -Spath)\" scripts/verify-cljs.cljs",
+    "vectors": "nbb testdata/gen_vectors.cljs > test/ethereum/vectors.cljc"
+  },
+  "comment": "viem is a test-time oracle only. Nothing in src/ requires it, on either runtime.",
+  "devDependencies": {
+    "viem": "^2.55.10"
+  }
+}
