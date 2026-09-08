@@ -17,7 +17,7 @@
 ;;   npm install && nbb testdata/gen_vectors.cljs > test/ethereum/vectors.cljc
 (ns gen-vectors
   (:require ["viem" :as viem]
-            [clojure.string :as str]))
+            [kotoba.lang.text :as str]))
 
 ;; viem's `encodeAbiParameters` does not take the `(a,b)` tuple shorthand;
 ;; a tuple is `{type: "tuple", components: [...]}`. Those cases therefore
