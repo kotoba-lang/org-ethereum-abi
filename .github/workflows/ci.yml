@@ -34,7 +34,7 @@ jobs:
         with:
           cli: latest
       - run: npm install -g nbb
-      - run: nbb --classpath "$(clojure -A:cljs -Spath)" scripts/verify-cljs.cljs
+      - run: nbb --classpath "$(clojure -A:cljs -Spath)" scripts/verify-cljs.cljk
 
   vectors:
     # The vector table is viem's output, not this library's. Regenerate and
@@ -52,5 +52,5 @@ jobs:
         run: |
           set -euo pipefail
           VIEM_VERSION=$(node -e "process.stdout.write(require('viem/package.json').version)") \
-            nbb testdata/gen_vectors.cljs > /tmp/vectors.cljc
-          diff -u test/ethereum/vectors.cljc /tmp/vectors.cljc
+            nbb testdata/gen_vectors.cljk > /tmp/vectors.cljc
+          diff -u test/ethereum/vectors.cljk /tmp/vectors.cljc
