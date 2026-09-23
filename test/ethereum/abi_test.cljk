@@ -1,5 +1,5 @@
 (ns ethereum.abi-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [ethereum.abi :as abi]
             [ethereum.abi.word :as w]
             [ethereum.vectors :as v]))
